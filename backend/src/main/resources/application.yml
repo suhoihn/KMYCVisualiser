@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: kmy-visualiser-backend
+
+server:
+  port: ${PORT:8080}
+
+kmy:
+  compiler:
+    path: ${KMY_COMPILER_PATH:../../RemoteProjects/kmyc.exe}
+    timeout: 5s
+    max-source-length: 100000
+
