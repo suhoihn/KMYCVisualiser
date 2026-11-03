@@ -9,6 +9,8 @@ const events = []
 await submitPlayground({ 'main.kmy': 'print(1 + 2 * 3);' }, 'main.kmy', new AbortController().signal, event => events.push(event))
 const result = events.find(event => event.type === 'analysis').analysis
 const compile = events.find(event => event.type === 'compilation').compilation
+assert.match(compile.assembly.text, /\.intel_syntax noprefix/)
+assert.equal(compile.assembly.truncated, false)
 const execution = events.find(event => event.type === 'execution').execution
 assert.equal(execution.stdout, '7\n')
 assert.equal(events.at(-1).status, 'success')

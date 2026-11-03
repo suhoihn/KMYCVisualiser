@@ -27,8 +27,11 @@ def check(base, run=False):
     if not any(e['type'] == 'analysis' and e['analysis']['ok'] and
                any(p['kind'] == 'createNode' for p in e['analysis']['parser']['events']) for e in events):
         raise RuntimeError('Missing successful parser trace')
-    if not any(e['type'] == 'compilation' and e['compilation']['exitCode'] == 0 for e in events):
+    compilation = next((e['compilation'] for e in events if e['type'] == 'compilation'), None)
+    if not compilation or compilation['exitCode'] != 0:
         raise RuntimeError('Native compilation did not succeed')
+    if '.intel_syntax noprefix' not in compilation.get('assembly', {}).get('text', ''):
+        raise RuntimeError('Missing generated Linux assembly')
     if any(e['type'] == 'error' for e in events):
         raise RuntimeError('Runner returned an error')
     executions = [e['execution'] for e in events if e['type'] == 'execution']

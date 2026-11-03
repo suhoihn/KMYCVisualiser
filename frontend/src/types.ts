@@ -43,6 +43,7 @@ export interface ProcessResult {
   stderr: string
   durationMs: number
   limit: 'timeout' | 'output_limit' | 'heap_limit' | null
+  assembly?: { text: string; truncated: boolean }
 }
 
 export type PlaygroundEvent =

@@ -315,7 +315,7 @@ function App() {
             {error || nativeFailed ? <AlertTriangle size={14} /> : loading ? <LoaderCircle className="spin" size={14} /> : missingImports.length || invalidFile ? <AlertTriangle size={14} /> : result?.ok ? <CircleCheck size={14} /> : <ScanLine size={14} />}
             {error ? 'Job error' : loading ? `Server: ${serverPhase}` : missingImports.length ? 'Module file missing' : invalidFile ? `Syntax issue in ${invalidFile}` : jobStatus ? jobStatus.replaceAll('_', ' ') : result?.ok ? 'Syntax valid' : 'Ready to visualise'}
           </div>
-          <button className="guide-button" onClick={() => setGuideOpen(true)}><BookOpen size={16} /> Language guide</button>
+          <button className="guide-button" onClick={() => setGuideOpen(true)}><BookOpen size={16} /> Guide &amp; limits</button>
         </div>
       </header>
 
@@ -324,7 +324,7 @@ function App() {
           ['lexer', ScanLine, '01', 'Lexer', 'Characters → tokens'],
           ['parser', Workflow, '02', 'Parser', 'Tokens → decisions'],
           ['ast', Braces, '03', 'AST', 'Decisions → tree'],
-          ['compile', Code2, '04', 'Compile', 'Semantics → native x86'],
+          ['compile', Code2, '04', 'Compile / ASM', 'Linux x86-64 assembly'],
           ['execution', Play, '05', 'Output', 'Run Linux executable'],
         ] as const).map(([key, Icon, number, title, subtitle], index) => (
           <div className="pipeline-unit" key={key}>
@@ -372,7 +372,7 @@ function App() {
               <select aria-label="Load example" onChange={(event) => loadExample(event.target.value as keyof typeof examples)} defaultValue="Expression">
                 {Object.keys(examples).map((name) => <option key={name}>{name}</option>)}
               </select>
-              <button className="analyse-button" onClick={submitAnalysis} disabled={loading} title="Compile and run source (Ctrl/Cmd+Enter)">
+              <button className="analyse-button" onClick={submitAnalysis} disabled={loading} title="Submit source (Ctrl/Cmd+Enter)">
                 {loading ? <LoaderCircle className="spin" size={15} /> : <Workflow size={15} />}
                 {loading ? 'Working' : 'Submit'}
               </button>
@@ -419,7 +419,7 @@ function App() {
             <>
               <div className="panel-header"><div><span className="eyebrow">Stage 01</span><h2>Token stream</h2></div><span className="metric">{lexerVisibleCount} / {result?.tokens.length ?? 0} tokens</span></div>
               <div className="token-stream">
-                {!result && <div className="empty-state">Edit freely, then press Compile &amp; run or Ctrl/Cmd+Enter to record and execute your project.</div>}
+                {!result && <div className="empty-state">Press Submit or Ctrl/Cmd+Enter to record and compile your project.</div>}
                 {result && lexerVisibleCount === 0 && <div className="empty-state">Press Play or Next to scan the first token.</div>}
                 {result?.tokens.slice(0, lexerVisibleCount).map((token, index) => (
                   <button key={token.id} className={`token token-${token.category} ${activeTokenId === token.id ? 'selected token-arriving' : ''}`}
@@ -498,7 +498,12 @@ function App() {
               <h2>{stage === 'compile' ? 'Compilation results' : 'Program output'}</h2></div></div>
               {process ? <div className="process-result"><div className={`process-status ${process.exitCode === 0 && !process.limit ? 'ok' : 'failed'}`}>
                 Exit {process.exitCode} · {process.durationMs} ms{process.limit && ` · ${process.limit.replaceAll('_', ' ')}`}</div>
-                <h3>Standard output</h3><pre>{process.stdout || '(no output)'}</pre>
+                {stage === 'compile' && process.assembly && <>
+                  <h3>Generated assembly · Linux x86-64</h3>
+                  {process.assembly.truncated && <p>Showing the first 256 KiB of assembly.</p>}
+                  <pre className="assembly-source" tabIndex={0} aria-label="Generated assembly"><code>{process.assembly.text}</code></pre>
+                </>}
+                {(stage === 'execution' || process.stdout) && <><h3>Standard output</h3><pre>{process.stdout || '(no output)'}</pre></>}
                 {process.stderr && <><h3>Errors / diagnostics</h3><pre className="process-errors">{process.stderr}</pre></>}
               </div> : <div className="empty-state">{loading ? `Server is in ${serverPhase}. Results will appear here.` : stage === 'execution' && jobStatus === 'compiled' ? 'This deployment compiles code but does not run submitted programs.' : stage === 'execution' && compilation?.exitCode !== 0 ? 'Execution waits for successful compilation.' : 'Submit your project to record native compilation.'}</div>}
             </>
@@ -508,7 +513,7 @@ function App() {
 
       {(compilation || execution) && <section className="native-output panel" aria-label="Native program results">
         <div className="panel-header"><div><span className="eyebrow">Native x86-64 · {mainFile}</span><h2>{execution ? 'Program output' : 'Compilation results'}</h2></div>
-          <button className="text-button" onClick={() => selectStage(execution ? 'execution' : 'compile')}>Inspect result →</button></div>
+          <button className="text-button" onClick={() => selectStage(execution ? 'execution' : 'compile')}>{!execution && compilation?.assembly ? 'View assembly →' : 'Inspect result →'}</button></div>
         <pre className={compilation?.exitCode !== 0 || execution?.limit || execution && execution.exitCode !== 0 ? 'process-errors' : ''}>
           {execution ? execution.stdout || execution.stderr || (execution.limit ? `Stopped: ${execution.limit}` : '(no output)') : compilation?.stderr || 'Compilation complete.'}
         </pre>
@@ -523,7 +528,7 @@ function App() {
         </div>
       </section>
 
-      <footer><span>KMY is a work in progress</span><span>Lexer → Pratt parser + AST → native Linux x86-64 → output</span></footer>
+      <footer><span>© 2026 KMY contributors · v0.1</span><span>Lexer → Pratt parser + AST → native Linux x86-64</span></footer>
       {guideOpen && <LanguageGuide onClose={() => setGuideOpen(false)} />}
     </main>
   )

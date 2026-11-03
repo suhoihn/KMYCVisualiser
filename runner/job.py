@@ -15,6 +15,7 @@ import time
 MAX_SOURCE = 65536
 MAX_OUTPUT = 65536
 MAX_RESULT = 8 * 1024 * 1024
+MAX_ASSEMBLY = 256 * 1024
 DEFAULT_MEMORY_BYTES = 4 * 1024 * 1024
 HEAP_LIMIT_EXIT = 86
 
@@ -31,6 +32,13 @@ def emit(event):
     if len(line.encode()) > MAX_RESULT:
         raise ValueError("Analysis exceeds the 8 MiB response limit")
     print(line, flush=True)
+
+
+def read_assembly(path):
+    with path.open("rb") as output:
+        preview = output.read(MAX_ASSEMBLY + 1)
+    return {"text": preview[:MAX_ASSEMBLY].decode("utf-8", errors="replace"),
+            "truncated": len(preview) > MAX_ASSEMBLY}
 
 
 def process(args, cwd, seconds, limit, *, stack_bytes=None):
@@ -167,8 +175,10 @@ def job(request):
         compiled = process([str(compiler), str(src / entry), "--linux", "--no-run", "-o", str(executable)],
                            compiler_root, 10, MAX_OUTPUT)
         if compiled["exitCode"] == 0 and not compiled["limit"]:
+            assembly_path = executable.with_suffix(".s")
+            assembly = read_assembly(assembly_path) if assembly_path.is_file() else None
             emit({"type": "phase", "phase": "link"})
-            linked = process(["gcc", str(executable) + ".s", str(compiler_root / "Runtime C Functions/runtime.c"),
+            linked = process(["gcc", str(assembly_path), str(compiler_root / "Runtime C Functions/runtime.c"),
                               str(Path(__file__).with_name("heap_limit.c").resolve()),
                               f"-DKMY_HEAP_BYTES={heap_bytes}",
                               "-Wl,--wrap=malloc,--wrap=calloc,--wrap=free",
@@ -176,6 +186,8 @@ def job(request):
             compiled = {**linked, "stdout": compiled["stdout"] + linked["stdout"],
                         "stderr": compiled["stderr"] + linked["stderr"],
                         "durationMs": compiled["durationMs"] + linked["durationMs"]}
+            if assembly is not None:
+                compiled["assembly"] = assembly
         emit({"type": "compilation", "compilation": compiled})
         if compiled["exitCode"] != 0 or compiled["limit"]:
             emit({"type": "result", "status": "compile_error"})

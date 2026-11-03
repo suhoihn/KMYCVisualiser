@@ -5,9 +5,10 @@ from pathlib import Path
 import signal
 import subprocess
 import sys
+import tempfile
 import unittest
 
-from job import validate
+from job import MAX_ASSEMBLY, read_assembly, validate
 
 
 class NativeIntegration(unittest.TestCase):
@@ -72,9 +73,20 @@ class NativeIntegration(unittest.TestCase):
     def test_compile_only_never_runs_the_executable(self):
         events = self.submit({"main.kmy": "while (true) { }"}, KMY_EXECUTION_MODE="compile")
         self.assertTrue(any(event["type"] == "analysis" for event in events))
-        self.assertEqual(next(event["compilation"] for event in events if event["type"] == "compilation")["exitCode"], 0)
+        compilation = next(event["compilation"] for event in events if event["type"] == "compilation")
+        self.assertEqual(compilation["exitCode"], 0)
+        self.assertIn(".intel_syntax noprefix", compilation["assembly"]["text"])
+        self.assertFalse(compilation["assembly"]["truncated"])
         self.assertFalse(any(event["type"] == "execution" or event.get("phase") == "execution" for event in events))
         self.assertEqual(events[-1]["status"], "compiled")
+
+    def test_assembly_preview_cap(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "program.s"
+            path.write_bytes(b"x" * (MAX_ASSEMBLY + 1))
+            preview = read_assembly(path)
+            self.assertEqual(len(preview["text"]), MAX_ASSEMBLY)
+            self.assertTrue(preview["truncated"])
 
     def test_heap_limit_preserves_trace_and_compile_result(self):
         events = self.submit({"main.kmy": "var p: int* = malloc(4194305); print(1);"})

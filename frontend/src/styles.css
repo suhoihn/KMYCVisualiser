@@ -55,6 +55,7 @@ button { color: inherit; }
 .parser-construction .ast-scroll { max-height: 460px; }
 .process-result { padding: 18px; }
 .process-result h3 { color: var(--muted); margin: 20px 0 8px; font-size: 11px; }
+.process-result pre.assembly-source { white-space: pre; overflow-wrap: normal; }
 .process-result pre, .native-output pre { margin: 0; padding: 16px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 360px; background: #080f16; color: var(--mint); font: 12px/1.7 'Cascadia Code', monospace; }
 .process-status { font-size: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 7px; }
 .process-status.ok { color: var(--mint); background: #10251f; }

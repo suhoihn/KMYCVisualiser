@@ -39,6 +39,19 @@ KMY_RUNNER_MODE=local KMY_EXECUTION_MODE=run KMY_COMPILER_PATH="$PWD/release/lin
 
 It binds only to `127.0.0.1:8090`; use it only for your own trusted programs. Run the frontend/backend with the existing `dev start` launcher. Spring's default runner URL is `http://127.0.0.1:8090` and can be changed with `KMY_RUNNER_URL`. The production Compose deployment always uses Docker jobs.
 
+## Enable execution for a private VPS test
+
+GitHub deployment always starts in compile-only mode. If the app is reachable **only over your SSH tunnel** and you are testing trusted code, you can temporarily switch the deployed stack to run mode. On the VPS:
+
+```sh
+cd ~/kmy-deploy/current
+KMY_WEB_BIND=127.0.0.1 KMY_WEB_PORT=8088 KMY_EXECUTION_MODE=run \
+  docker compose --project-name kmy-playground --env-file images.env \
+  up -d --no-build --force-recreate
+```
+
+Wait for startup, then submit `print(1 + 2 * 3);` in the browser and open **Output**. It should show `7`. To turn execution off, repeat the same command with `KMY_EXECUTION_MODE=compile`. A subsequent GitHub deployment also restores compile-only mode. Do not enable run mode while a public reverse proxy exposes the app: the file read/write ban is not implemented.
+
 ## How results reach the UI
 
 React sends the complete files map and `main.kmy` entry point to `POST /api/playground`. Spring forwards it to the private runner and streams newline-delimited JSON without interpreting the language. The job runs `kmyc file --frontend-json` for each file. Schema v2 records parser calls, token consumption, Pratt decisions, and shallow AST node snapshots with stable IDs at creation time. Partial nodes can survive a syntax failure. The frontend assembles those recorded nodes into partial trees while stepping forward, and reconstructs an earlier state when rewinding.
