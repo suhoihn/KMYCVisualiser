@@ -3,15 +3,18 @@ import argparse
 import json
 import time
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 
 def check(base, run=False):
     source = 'print(7);' if run else 'while (true) { }'
+    address = urlsplit(base)
     request = Request(base.rstrip('/') + '/api/playground',
                       data=json.dumps({'files': {'main.kmy': source},
                                        'entryFile': 'main.kmy', 'action': 'run'}).encode(),
-                      headers={'Content-Type': 'application/json'})
+                      headers={'Content-Type': 'application/json',
+                               'Origin': f'{address.scheme}://{address.netloc}'})
     for attempt in range(10):
         try:
             with urlopen(request, timeout=55) as response:
