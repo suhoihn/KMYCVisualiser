@@ -43,6 +43,7 @@ jobs:
         run: |
           npm ci
           npm run build
+          grep -F 'src="./assets/' dist/index.html
       - name: Test and build Spring
         working-directory: backend
         run: bash gradlew --no-daemon test bootJar

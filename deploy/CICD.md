@@ -20,6 +20,18 @@ This is a single-server rollout, so service restarts can briefly interrupt reque
 
 Auto-deploy binds to `127.0.0.1:8088` and forces compile-only mode. To inspect from your computer, forward `localhost:8088` to the VPS's `127.0.0.1:8088` with SSH (`-L 8088:127.0.0.1:8088`) and open `http://localhost:8088`. For a public site, put an HTTPS reverse proxy in front after testing. This does **not** add the file-access sandbox required for public native execution.
 
+### Public `/kmy/` on the personal site VPS
+
+The personal site's Nginx still owns port 80. The playground and personal-site web containers share the external `kmy-public-edge` network (`172.30.88.0/28`); the personal proxy uses `172.30.88.2`. The deploy script automatically attaches only the playground web container when the network exists. The personal-site files in [`personal-site/`](personal-site/) are installed alongside its existing `compose.yaml`. This keeps the home page at `/`, proxies `/kmy/` to the playground, and leaves Spring and the runner unexposed. This public IP route uses HTTP; use HTTPS before asking visitors to submit private code.
+
+To watch completed HTTP submissions (no source code or query string is logged):
+
+```sh
+docker logs --tail 50 -f personal-site-web-1 2>&1 | grep --line-buffered 'kmy_submit '
+```
+
+HTTP `200` means the compiler stream was delivered, not necessarily that the submitted source compiled successfully. The browser shows the actual compiler result.
+
 ## Inspect and roll back
 
 On the VPS, inspect the active version with `readlink ~/kmy-deploy/current`. To roll back, disable `DEPLOY_ENABLED`, wait for any running deploy to finish, and run `bash ~/kmy-deploy/releases/<older-release>/deploy.sh` on a previously successful release. The same pull, smoke test, and rollback logic applies. Then revert or fix the bad commit on `main` before re-enabling deployment.
