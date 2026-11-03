@@ -1,0 +1,50 @@
+fun makeCounter(start: int): () -> int {
+    var value = start;
+
+    return fun(): int {
+        value += 1;
+        return value;
+    };
+}
+
+fun makeAccumulator(seed: int): () -> int {
+    var state = seed;
+
+    fun next(): int {
+        state += 5;
+        return state;
+    }
+
+    return next;
+}
+
+fun makeNestedStepper(start: int): () -> () -> int {
+    var value = start;
+
+    return fun(): () -> int {
+        return fun(): int {
+            value += 2;
+            return value;
+        };
+    };
+}
+
+fun main(): int {
+    var first = makeCounter(10);
+    var second = makeCounter(100);
+    print(first());
+    print(second());
+    print(first());
+
+    var accumulator = makeAccumulator(0);
+    print(accumulator());
+    print(accumulator());
+
+    var nested = makeNestedStepper(1)();
+    print(nested());
+    print(nested());
+
+    return 0;
+}
+
+main();

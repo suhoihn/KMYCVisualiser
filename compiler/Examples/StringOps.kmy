@@ -1,0 +1,14 @@
+// Native string runtime smoke test.
+var hello: string = "hello";
+var world: string = "world";
+
+print(hello);
+print(strconcat(hello, " "));
+print(strconcat(strconcat(hello, " "), world));
+print(streq(strconcat(hello, "!"), "hello!"));
+print(streq(hello, world));
+print(strlen(hello));
+print(strByteAt(hello, 1));
+print(strByteAt(hello, -1));
+print(strFromByte(65));
+print(strFromByte(-1));

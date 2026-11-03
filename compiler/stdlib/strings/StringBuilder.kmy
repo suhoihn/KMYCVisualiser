@@ -1,0 +1,20 @@
+class StringBuilder {
+    var value: string = "";
+    init() {
+    }
+    fun append(part: string) {
+        this.value = strconcat(this.value, part);
+    }
+    fun appendByte(byte: int) {
+        this.value = strconcat(this.value, strFromByte(byte));
+    }
+    fun clear() {
+        this.value = "";
+    }
+    fun build(): string {
+        return this.value;
+    }
+    fun length(): int {
+        return strlen(this.value);
+    }
+};

@@ -1,0 +1,4 @@
+import "math.kmy" as math;
+
+print(math::triple(7));
+print(math::addFour(10));

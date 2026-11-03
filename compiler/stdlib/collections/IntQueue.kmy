@@ -1,0 +1,50 @@
+class IntQueue {
+    var data: int[] = new int[4];
+    var head: int = 0;
+    var tail: int = 0;
+    var size: int = 0;
+    var capacity: int = 4;
+    init() {
+    }
+    fun grow() {
+        var next: int[] = new int[this.capacity * 2];
+        var i: int = 0;
+        while (i < this.size) {
+            next[i] = this.data[(this.head + i) % this.capacity];
+            i += 1;
+        }
+        this.data = next;
+        this.head = 0;
+        this.tail = this.size;
+        this.capacity *= 2;
+    }
+    fun enqueue(value: int) {
+        if (this.size == this.capacity) {
+            this.grow();
+        }
+        this.data[this.tail] = value;
+        this.tail = (this.tail + 1) % this.capacity;
+        this.size += 1;
+    }
+    fun dequeue(): int {
+        if (this.size == 0) {
+            return -1;
+        }
+        var value: int = this.data[this.head];
+        this.head = (this.head + 1) % this.capacity;
+        this.size -= 1;
+        return value;
+    }
+    fun peek(): int {
+        if (this.size == 0) {
+            return -1;
+        }
+        return this.data[this.head];
+    }
+    fun length(): int {
+        return this.size;
+    }
+    fun isEmpty(): bool {
+        return this.size == 0;
+    }
+};

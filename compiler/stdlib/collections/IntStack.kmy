@@ -1,0 +1,43 @@
+class IntStack {
+    var data: int[] = new int[4];
+    var size: int = 0;
+    var capacity: int = 4;
+    init() {
+    }
+    fun push(value: int) {
+        if (this.size == this.capacity) {
+            var next: int[] = new int[this.capacity * 2];
+            var i: int = 0;
+            while (i < this.size) {
+                next[i] = this.data[i];
+                i += 1;
+            }
+            this.data = next;
+            this.capacity *= 2;
+        }
+        this.data[this.size] = value;
+        this.size += 1;
+    }
+    fun pop(): int {
+        if (this.size == 0) {
+            return -1;
+        }
+        this.size -= 1;
+        return this.data[this.size];
+    }
+    fun peek(): int {
+        if (this.size == 0) {
+            return -1;
+        }
+        return this.data[this.size - 1];
+    }
+    fun length(): int {
+        return this.size;
+    }
+    fun isEmpty(): bool {
+        return this.size == 0;
+    }
+    fun clear() {
+        this.size = 0;
+    }
+};

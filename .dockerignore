@@ -1,0 +1,8 @@
+.git
+.dev
+frontend/node_modules
+backend/.gradle
+compiler
+release/bundle
+release/*.tar.gz
+**/__pycache__

@@ -1,0 +1,16 @@
+class IntPair {
+    var first: int = 0;
+    var second: int = 0;
+    init(first: int, second: int) {
+        this.first = first;
+        this.second = second;
+    }
+    fun sum(): int {
+        return this.first + this.second;
+    }
+    fun swap() {
+        var value: int = this.first;
+        this.first = this.second;
+        this.second = value;
+    }
+};

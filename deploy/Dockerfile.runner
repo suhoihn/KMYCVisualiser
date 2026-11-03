@@ -1,0 +1,6 @@
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y --no-install-recommends python3 && rm -rf /var/lib/apt/lists/*
+WORKDIR /runner
+COPY runner/job.py runner/server.py ./
+ENV PYTHONDONTWRITEBYTECODE=1
+ENTRYPOINT ["python3", "-u", "server.py"]

@@ -4,7 +4,7 @@ import { EditorView } from '@codemirror/view'
 const keywords = new Set([
   'print', 'if', 'else', 'while', 'for', 'continue', 'break', 'true', 'false',
   'null', 'let', 'const', 'fun', 'return', 'this', 'class', 'new', 'typealias',
-  'record', 'init', 'enum',
+  'record', 'init', 'enum', 'import', 'as', 'from', 'var', 'shared',
 ])
 
 const types = new Set(['int', 'double', 'bool', 'string', 'void', 'any', 'i64', 'u64', 'f64', 'byte'])
@@ -52,4 +52,3 @@ export const kmyEditorTheme = EditorView.theme({
   '.cm-active-token': { backgroundColor: '#f4bd5060', borderBottom: '1px solid #f4bd50' },
   '.cm-diagnostic': { textDecoration: 'underline wavy #ff6b7a' },
 }, { dark: true })
-

@@ -1,0 +1,59 @@
+fun abs(value: int): int {
+    if (value < 0) {
+        return -value;
+    }
+    return value;
+}
+fun min(left: int, right: int): int {
+    if (left < right) {
+        return left;
+    }
+    return right;
+}
+fun max(left: int, right: int): int {
+    if (left > right) {
+        return left;
+    }
+    return right;
+}
+fun clamp(value: int, low: int, high: int): int {
+    return min(max(value, low), high);
+}
+fun sign(value: int): int {
+    if (value < 0) {
+        return -1;
+    }
+    if (value > 0) {
+        return 1;
+    }
+    return 0;
+}
+fun gcd(left: int, right: int): int {
+    var a: int = abs(left);
+    var b: int = abs(right);
+    while (b != 0) {
+        var next: int = a % b;
+        a = b;
+        b = next;
+    }
+    return a;
+}
+fun lcm(left: int, right: int): int {
+    if (left == 0 || right == 0) {
+        return 0;
+    }
+    return abs(left / gcd(left, right) * right);
+}
+fun powInt(base: int, exponent: int): int {
+    var result: int = 1;
+    var value: int = base;
+    var power: int = exponent;
+    while (power > 0) {
+        if (power % 2 == 1) {
+            result *= value;
+        }
+        value *= value;
+        power /= 2;
+    }
+    return result;
+}

@@ -1,0 +1,30 @@
+class StringSet {
+    var values: string[] = new string[8];
+    var size: int = 0;
+    init() {
+    }
+    fun contains(value: string): bool {
+        var i: int = 0;
+        while (i < this.size) {
+            if (streq(this.values[i], value)) {
+                return true;
+            }
+            i += 1;
+        }
+        return false;
+    }
+    fun add(value: string): bool {
+        if (this.contains(value)) {
+            return false;
+        }
+        if (this.size == 8) {
+            return false;
+        }
+        this.values[this.size] = value;
+        this.size += 1;
+        return true;
+    }
+    fun length(): int {
+        return this.size;
+    }
+};

@@ -1,0 +1,16 @@
+// Hidden environment + eight user arguments crosses both ABIs' register limits.
+fun weighted(a: int, b: int, c: int, d: int, e: int, f: int, g: int, h: int): int {
+    return a + b * 2 + c * 3 + d * 4 + e * 5 + f * 6 + g * 7 + h * 8;
+}
+
+fun makeOffset(seed: int): (int, int, int, int, int, int, int, int) -> int {
+    return fun(a: int, b: int, c: int, d: int, e: int, f: int, g: int, h: int): int {
+        return seed + weighted(a, b, c, d, e, f, g, h);
+    };
+}
+
+print(weighted(1, 2, 3, 4, 5, 6, 7, 8));
+let offset = makeOffset(100);
+print(offset(1, 2, 3, 4, 5, 6, 7, 8));
+print(weighted(8, 7, 6, 5, 4, 3, 2, 1));
+print("Linux ABI");

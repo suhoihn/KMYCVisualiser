@@ -1,0 +1,22 @@
+class IntOption {
+    var present: bool = false;
+    var value: int = 0;
+    init() {
+    }
+    fun set(value: int) {
+        this.value = value;
+        this.present = true;
+    }
+    fun clear() {
+        this.present = false;
+    }
+    fun getOr(fallback: int): int {
+        if (this.present) {
+            return this.value;
+        }
+        return fallback;
+    }
+    fun isSome(): bool {
+        return this.present;
+    }
+};

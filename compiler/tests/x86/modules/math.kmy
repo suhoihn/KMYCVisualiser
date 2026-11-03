@@ -1,0 +1,7 @@
+fun triple(value: int): int {
+    return value * 3;
+}
+
+fun addFour(value: int): int {
+    return value + 4;
+}

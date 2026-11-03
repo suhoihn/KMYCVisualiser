@@ -1,0 +1,19 @@
+fun isIndex(index: int, length: int): bool {
+    return index >= 0 && index < length;
+}
+fun isInsertIndex(index: int, length: int): bool {
+    return index >= 0 && index <= length;
+}
+fun nonNegative(value: int): int {
+    if (value < 0) {
+        return 0;
+    }
+    return value;
+}
+fun capacityFor(required: int): int {
+    var capacity: int = 4;
+    while (capacity < required) {
+        capacity *= 2;
+    }
+    return capacity;
+}

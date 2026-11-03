@@ -1,0 +1,11 @@
+var values: int[3] = [1, 2, 3];
+var zeros = new int[5];
+
+print(values[1]);
+values[1] = 9;
+values[2] += 4;
+print(values[1]);
+print(values[2]);
+
+zeros[0] = 7;
+print(zeros[0]);

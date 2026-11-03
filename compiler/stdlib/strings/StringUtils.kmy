@@ -1,0 +1,68 @@
+fun stringEquals(left: string, right: string): bool {
+    return streq(left, right);
+}
+fun stringLength(value: string): int {
+    return strlen(value);
+}
+fun stringIsEmpty(value: string): bool {
+    return strlen(value) == 0;
+}
+fun stringCharAt(value: string, index: int): int {
+    if (index < 0 || index >= strlen(value)) {
+        return -1;
+    }
+    return strByteAt(value, index);
+}
+fun stringStartsWith(value: string, prefix: string): bool {
+    if (strlen(prefix) > strlen(value)) {
+        return false;
+    }
+    var i: int = 0;
+    while (i < strlen(prefix)) {
+        if (strByteAt(value, i) != strByteAt(prefix, i)) {
+            return false;
+        }
+        i += 1;
+    }
+    return true;
+}
+fun stringEndsWith(value: string, suffix: string): bool {
+    var start: int = strlen(value) - strlen(suffix);
+    if (start < 0) {
+        return false;
+    }
+    var i: int = 0;
+    while (i < strlen(suffix)) {
+        if (strByteAt(value, start + i) != strByteAt(suffix, i)) {
+            return false;
+        }
+        i += 1;
+    }
+    return true;
+}
+fun stringRepeat(value: string, count: int): string {
+    var result: string = "";
+    var i: int = 0;
+    while (i < count) {
+        result = strconcat(result, value);
+        i += 1;
+    }
+    return result;
+}
+fun stringIndexOf(value: string, needle: string): int {
+    if (strlen(needle) == 0) {
+        return 0;
+    }
+    var i: int = 0;
+    while (i + strlen(needle) <= strlen(value)) {
+        var j: int = 0;
+        while (j < strlen(needle) && strByteAt(value, i + j) == strByteAt(needle, j)) {
+            j += 1;
+        }
+        if (j == strlen(needle)) {
+            return i;
+        }
+        i += 1;
+    }
+    return -1;
+}

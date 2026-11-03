@@ -1,0 +1,13 @@
+fun fileExists(path: string): bool {
+    return strlen(readFile(path)) > 0;
+}
+fun readTextOr(path: string, fallback: string): string {
+    var contents: string = readFile(path);
+    if (strlen(contents) == 0) {
+        return fallback;
+    }
+    return contents;
+}
+fun writeText(path: string, contents: string): bool {
+    return writeFile(path, contents);
+}

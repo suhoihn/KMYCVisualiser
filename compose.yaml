@@ -1,0 +1,68 @@
+services:
+  web:
+    image: ${KMY_WEB_IMAGE:-kmy-web:local}
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    ports:
+      - "${KMY_WEB_BIND:-127.0.0.1}:${KMY_WEB_PORT:-8088}:8080"
+    user: "101:101"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    mem_limit: 48m
+    pids_limit: 32
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on: [backend]
+    networks: [edge, private]
+    restart: unless-stopped
+  backend:
+    image: ${KMY_BACKEND_IMAGE:-kmy-backend:local}
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.backend
+    environment:
+      KMY_RUNNER_URL: http://runner:8090
+      JAVA_TOOL_OPTIONS: -Xms32m -Xmx160m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k
+    mem_limit: 320m
+    pids_limit: 80
+    read_only: true
+    tmpfs:
+      - /tmp:size=24m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on: [runner]
+    networks: [private]
+    restart: unless-stopped
+  runner:
+    image: ${KMY_RUNNER_IMAGE:-kmy-runner:local}
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.runner
+    environment:
+      KMY_JOB_IMAGE: ${KMY_JOB_IMAGE:-kmy-job:local}
+      KMY_EXECUTION_MODE: ${KMY_EXECUTION_MODE:-compile}
+      KMY_HEAP_BYTES: ${KMY_HEAP_BYTES:-4194304}
+      KMY_STACK_BYTES: ${KMY_STACK_BYTES:-4194304}
+      KMY_SANDBOX_RUNTIME: ${KMY_SANDBOX_RUNTIME:-}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    mem_limit: 64m
+    pids_limit: 32
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [private]
+    restart: unless-stopped
+  job-image:
+    profiles: [build]
+    image: ${KMY_JOB_IMAGE:-kmy-job:local}
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.job
+    network_mode: none
+networks:
+  edge: {}
+  private:
+    internal: true

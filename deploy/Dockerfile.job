@@ -1,0 +1,8 @@
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev python3 && rm -rf /var/lib/apt/lists/*
+COPY release/linux-x86_64/ /opt/kmy/
+COPY runner/job.py runner/heap_limit.c /opt/runner/
+RUN chmod 755 /opt/kmy/kmyc
+WORKDIR /opt/kmy
+USER 65532:65532
+ENTRYPOINT ["python3", "-u", "/opt/runner/job.py"]

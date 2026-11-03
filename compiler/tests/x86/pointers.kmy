@@ -1,0 +1,8 @@
+// Basic pointer operations on the native x86 backend.
+var value: int = 7;
+var pointer = &value;
+
+print(*pointer);
+*pointer = 42;
+print(value);
+

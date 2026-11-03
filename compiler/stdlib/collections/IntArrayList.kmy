@@ -1,0 +1,73 @@
+class IntArrayList {
+    var data: int[] = new int[4];
+    var size: int = 0;
+    var capacity: int = 4;
+    init() {
+    }
+    fun grow() {
+        var next: int[] = new int[this.capacity * 2];
+        var i: int = 0;
+        while (i < this.size) {
+            next[i] = this.data[i];
+            i += 1;
+        }
+        this.data = next;
+        this.capacity *= 2;
+    }
+    fun add(value: int): bool {
+        if (this.size == this.capacity) {
+            this.grow();
+        }
+        this.data[this.size] = value;
+        this.size += 1;
+        return true;
+    }
+    fun get(index: int): int {
+        if (index < 0 || index >= this.size) {
+            return -1;
+        }
+        return this.data[index];
+    }
+    fun set(index: int, value: int): bool {
+        if (index < 0 || index >= this.size) {
+            return false;
+        }
+        this.data[index] = value;
+        return true;
+    }
+    fun removeAt(index: int): int {
+        if (index < 0 || index >= this.size) {
+            return -1;
+        }
+        var removed: int = this.data[index];
+        var i: int = index;
+        while (i + 1 < this.size) {
+            this.data[i] = this.data[i + 1];
+            i += 1;
+        }
+        this.size -= 1;
+        return removed;
+    }
+    fun indexOf(value: int): int {
+        var i: int = 0;
+        while (i < this.size) {
+            if (this.data[i] == value) {
+                return i;
+            }
+            i += 1;
+        }
+        return -1;
+    }
+    fun contains(value: int): bool {
+        return this.indexOf(value) != -1;
+    }
+    fun clear() {
+        this.size = 0;
+    }
+    fun length(): int {
+        return this.size;
+    }
+    fun isEmpty(): bool {
+        return this.size == 0;
+    }
+};

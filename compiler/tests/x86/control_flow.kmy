@@ -1,0 +1,52 @@
+fun main(): int {
+    var total = 0;
+
+    for (var i = 0; i < 5; i += 1) {
+        if (i % 2 == 0) {
+            total += i;
+        } else {
+            if (i == 3) {
+                total += 10;
+            } else {
+                total += 0;
+            }
+        }
+    }
+
+    var j = 0;
+    while (j < 3) {
+        if (j == 1) {
+            total += 200;
+        } else {
+            total += 100;
+        }
+        j += 1;
+    }
+
+    print(total);
+
+    var scopedTotal = 0;
+    for (var outer = 0; outer < 3; outer += 1) {
+        var inner = 0;
+        while (inner < 3) {
+            inner += 1;
+
+            if (inner == 2) {
+                continue;
+            }
+
+            if (outer == 1) {
+                if (inner == 3) {
+                    break;
+                }
+            }
+
+            scopedTotal += outer * 10 + inner;
+        }
+    }
+
+    print(scopedTotal);
+    return total;
+}
+
+main();

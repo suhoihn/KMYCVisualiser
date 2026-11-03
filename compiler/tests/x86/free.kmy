@@ -1,0 +1,9 @@
+// free accepts a typed pointer through the opaque any* builtin parameter.
+var value: int* = malloc(8);
+*value = 123;
+print(*value);
+free(value);
+
+// Reaching here proves the call returned normally. Do not access value again:
+// use-after-free and double-free remain programmer-unsafe operations.
+print(7);

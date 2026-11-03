@@ -1,0 +1,67 @@
+class StringArrayList {
+    var data: string[] = new string[4];
+    var size: int = 0;
+    var capacity: int = 4;
+    init() {
+    }
+    fun grow() {
+        var next: string[] = new string[this.capacity * 2];
+        var i: int = 0;
+        while (i < this.size) {
+            next[i] = this.data[i];
+            i += 1;
+        }
+        this.data = next;
+        this.capacity *= 2;
+    }
+    fun add(value: string): bool {
+        if (this.size == this.capacity) {
+            this.grow();
+        }
+        this.data[this.size] = value;
+        this.size += 1;
+        return true;
+    }
+    fun get(index: int): string {
+        if (index < 0 || index >= this.size) {
+            return "";
+        }
+        return this.data[index];
+    }
+    fun set(index: int, value: string): bool {
+        if (index < 0 || index >= this.size) {
+            return false;
+        }
+        this.data[index] = value;
+        return true;
+    }
+    fun indexOf(value: string): int {
+        var i: int = 0;
+        while (i < this.size) {
+            if (streq(this.data[i], value)) {
+                return i;
+            }
+            i += 1;
+        }
+        return -1;
+    }
+    fun contains(value: string): bool {
+        return this.indexOf(value) != -1;
+    }
+    fun removeAt(index: int): string {
+        if (index < 0 || index >= this.size) {
+            return "";
+        }
+        var removed: string = this.data[index];
+        var i: int = index;
+        while (i + 1 < this.size) {
+            this.data[i] = this.data[i + 1];
+            i += 1;
+        }
+        this.size -= 1;
+        return removed;
+    }
+    fun length(): int {
+        return this.size;
+    }
+};

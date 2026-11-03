@@ -1,0 +1,54 @@
+class IntDeque {
+    var data: int[] = new int[4];
+    var head: int = 0;
+    var size: int = 0;
+    var capacity: int = 4;
+    init() {
+    }
+    fun grow() {
+        var next: int[] = new int[this.capacity * 2];
+        var i: int = 0;
+        while (i < this.size) {
+            next[i] = this.data[(this.head + i) % this.capacity];
+            i += 1;
+        }
+        this.data = next;
+        this.head = 0;
+        this.capacity *= 2;
+    }
+    fun pushBack(value: int) {
+        if (this.size == this.capacity) {
+            this.grow();
+        }
+        this.data[(this.head + this.size) % this.capacity] = value;
+        this.size += 1;
+    }
+    fun pushFront(value: int) {
+        if (this.size == this.capacity) {
+            this.grow();
+        }
+        this.head = (this.head + this.capacity - 1) % this.capacity;
+        this.data[this.head] = value;
+        this.size += 1;
+    }
+    fun popFront(): int {
+        if (this.size == 0) {
+            return -1;
+        }
+        var value: int = this.data[this.head];
+        this.head = (this.head + 1) % this.capacity;
+        this.size -= 1;
+        return value;
+    }
+    fun popBack(): int {
+        if (this.size == 0) {
+            return -1;
+        }
+        var index: int = (this.head + this.size - 1) % this.capacity;
+        this.size -= 1;
+        return this.data[index];
+    }
+    fun length(): int {
+        return this.size;
+    }
+};

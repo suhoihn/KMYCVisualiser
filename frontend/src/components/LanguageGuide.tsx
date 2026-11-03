@@ -3,14 +3,15 @@ import { X } from 'lucide-react'
 interface Props { onClose: () => void }
 
 const sections = [
-  ['Variables', 'let score: int = 10;\nlet const limit = 100;', 'Variables are mutable by default. Put const after let to make one immutable.'],
+  ['Variables', 'var score: int = 10;\nlet limit = 100;', 'let creates an immutable binding. Use var when the value must be reassigned.'],
   ['Functions', 'fun add(a: int, b: int): int {\n    return a + b;\n}', 'Functions use fun, typed parameters, an optional return type, and a block body.'],
   ['Control flow', 'if (score > 5) {\n    print(score);\n} else {\n    print(0);\n}', 'if and while conditions require parentheses. Their bodies use braces.'],
-  ['Loops', 'for (let i = 0; i < 5; i += 1) {\n    print(i);\n}', 'The parser lowers for into an initializer plus a while loop. The AST view exposes that transformation.'],
+  ['Loops', 'for (var i = 0; i < 5; i += 1) {\n    print(i);\n}', 'The parser lowers for into an initializer plus a while loop. Parser replay shows the generated nodes being built.'],
   ['Arrays', 'let values: int[] = [1, 2, 3];\nvalues[0] = 9;', 'Array literals, array types, indexing, and index assignment are supported by the front end.'],
   ['Records', 'let point = {x: 2, y: 4};\nprint(point.x);', 'A brace expression containing name/value pairs creates an anonymous record literal.'],
-  ['Classes', 'class Counter {\n    let value: int;\n    init(start: int) { this.value = start; }\n};', 'Classes and records can contain fields, methods, constructors, and nested enums.'],
+  ['Classes', 'class Counter {\n    var value: int;\n    init(start: int) { this.value = start; }\n};', 'Classes and records can contain fields, methods, constructors, and nested enums.'],
   ['Enums', 'enum Color { RED, GREEN, BLUE };\nlet color = Color::RED;', 'Use :: for scoped enum access. Aggregate and enum declarations end in a semicolon.'],
+  ['Modules', 'import "lib/math.kmy" as math;\nprint(math::triple(7));', 'Imports go at the top of a file. Add the imported file in the source-file bar. Each file has its own parser recording; native compilation resolves the submitted project together.'],
   ['Types', 'int  double  bool  string  void  any\ni64  u64  f64  byte\nint[]  int[5]  (int, int)->int', 'KMY supports named, array, function, record-shaped, scoped, and nullable types in the parser.'],
 ]
 

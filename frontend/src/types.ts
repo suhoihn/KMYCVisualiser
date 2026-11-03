@@ -19,11 +19,39 @@ export interface KmyToken {
 
 export interface ParserEvent {
   step: number
-  kind: 'consume' | 'acceptOperator'
+  kind: 'consume' | 'acceptOperator' | 'returnExpression' | 'enter' | 'exit' | 'errorExit' | 'createNode'
   tokenId: string
+  callId?: number
+  parentCallId?: number
+  depth?: number
+  rule?: string
+  node?: RecordedNode
   minimumBindingPower?: number
   bindingPower?: number
 }
+
+export interface RecordedNode {
+  id: string
+  kind: string
+  label: string
+  children: { role: string; node: RecordedNode | { id: string; ref: true } }[]
+}
+
+export interface ProcessResult {
+  exitCode: number
+  stdout: string
+  stderr: string
+  durationMs: number
+  limit: 'timeout' | 'output_limit' | 'heap_limit' | null
+}
+
+export type PlaygroundEvent =
+  | { type: 'phase'; phase: string; file?: string }
+  | { type: 'analysis'; file: string; analysis: AnalysisResult }
+  | { type: 'compilation'; compilation: ProcessResult }
+  | { type: 'execution'; execution: ProcessResult }
+  | { type: 'result'; status: string }
+  | { type: 'error'; message: string }
 
 export interface AstChild {
   role: string
