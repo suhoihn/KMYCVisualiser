@@ -46,13 +46,16 @@ jobs:
       - name: Test and build Spring
         working-directory: backend
         run: bash gradlew --no-daemon test bootJar
-      - name: Build and smoke-test Docker images
+      - name: Build Docker images and test compile-only mode
         run: |
           docker compose --profile build build
           docker compose up -d --no-build --wait
           python3 deploy/smoke.py
+      - name: Test native output and parser replay
+        run: |
           docker compose down
           KMY_EXECUTION_MODE=run docker compose up -d --no-build --wait
+          python3 deploy/smoke.py --run
           KMY_TEST_API=http://127.0.0.1:8088 npm --prefix frontend run check:replay
       - name: Stop test services
         if: always()
