@@ -24,7 +24,7 @@ class PlaygroundControllerTest {
         }
         runner.start()
         try {
-            val controller = PlaygroundController(jacksonObjectMapper(), "http://127.0.0.1:${runner.address.port}")
+            val controller = PlaygroundController(PlaygroundRelayService(jacksonObjectMapper(), "http://127.0.0.1:${runner.address.port}"))
             val request = MockHttpServletRequest().apply {
                 setContent("{\"files\":{\"main.kmy\":\"print(1 + 2);\"},\"entryFile\":\"main.kmy\"}".toByteArray())
             }
@@ -37,7 +37,7 @@ class PlaygroundControllerTest {
 
     @Test
     fun `rejects oversized HTTP bodies before decoding JSON`() {
-        val controller = PlaygroundController(jacksonObjectMapper(), "http://127.0.0.1:1")
+        val controller = PlaygroundController(PlaygroundRelayService(jacksonObjectMapper(), "http://127.0.0.1:1"))
         val request = MockHttpServletRequest().apply { setContent(ByteArray(131073)) }
         val error = assertThrows<ResponseStatusException> { controller.submit(request) }
         assertEquals(HttpStatus.PAYLOAD_TOO_LARGE, error.statusCode)

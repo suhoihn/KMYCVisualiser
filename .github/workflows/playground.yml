@@ -128,9 +128,10 @@ jobs:
             exit 1
           fi
           echo "Deploy key fingerprint: $fingerprint"
-          opts=(-i "$ssh_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$ssh_dir/known_hosts")
+          opts=(-i "$ssh_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes
+                -o "UserKnownHostsFile=$ssh_dir/known_hosts" -o ConnectTimeout=15
+                -o ServerAliveInterval=15 -o ServerAliveCountMax=4)
           target="$VPS_USER@$VPS_HOST"
           release="kmy-deploy/releases/$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
-          ssh "${opts[@]}" "$target" "mkdir -p '$release'"
-          scp "${opts[@]}" deployment/{compose.yaml,compose.public.yaml,deploy.sh,smoke.py,images.env} "$target:$release/"
-          ssh "${opts[@]}" "$target" "bash '$release/deploy.sh'"
+          tar -C deployment -czf - compose.yaml compose.public.yaml deploy.sh smoke.py images.env |
+            ssh -T "${opts[@]}" "$target" "set -e; umask 077; mkdir -p '$release'; cd '$release'; tar -xzf -; bash -o pipefail -c 'bash deploy.sh </dev/null 2>&1 | tee deploy.log'"

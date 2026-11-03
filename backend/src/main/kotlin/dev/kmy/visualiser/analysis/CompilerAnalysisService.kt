@@ -3,6 +3,7 @@ package dev.kmy.visualiser.analysis
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.nio.charset.StandardCharsets
@@ -12,6 +13,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 @Service
+@Profile("legacy-analysis")
 class CompilerAnalysisService(
     private val properties: CompilerProperties,
     private val objectMapper: ObjectMapper,

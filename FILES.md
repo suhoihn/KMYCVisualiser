@@ -59,8 +59,9 @@ Start at `frontend/src/App.tsx` for the UI, `runner/job.py` for the submission p
 | `backend/gradle/wrapper/gradle-wrapper.jar`, `gradle-wrapper.properties` | Wrapper bootstrap binary and pinned Gradle distribution settings (both under the wrapper directory). |
 | `backend/src/main/resources/application.yml` | Port, stream timeout, runner URL, and legacy compiler configuration. |
 | `KmyVisualiserApplication.kt` | Spring entry point, under `backend/src/main/kotlin/dev/kmy/visualiser/`. |
-| `analysis/PlaygroundController.kt` | Current API: checks the request, forwards to the private runner, streams the result. |
-| `analysis/AnalysisController.kt` | Legacy direct analysis endpoint; not routed by production Nginx. |
+| `analysis/PlaygroundController.kt` | Current API: limits HTTP request size and delegates to the relay service. |
+| `analysis/PlaygroundRelayService.kt` | Checks the JSON envelope, forwards it to the private Python runner, and streams the runner's response. |
+| `analysis/AnalysisController.kt` | Legacy direct analysis endpoint, enabled only with the `legacy-analysis` Spring profile and not routed by production Nginx. |
 | `analysis/AnalysisRequest.kt` | Input model for the legacy endpoint. |
 | `analysis/CompilerAnalysisService.kt` | Invokes the configured compiler for legacy analysis. |
 | `analysis/CompilerProperties.kt` | Typed legacy compiler settings. |

@@ -23,7 +23,12 @@ compose() {
 }
 
 compose "$release" config --quiet
-compose "$release" --profile build pull web backend runner job-image
+for attempt in 1 2 3; do
+    if compose "$release" --profile build pull web backend runner job-image; then break; fi
+    if [[ "$attempt" == 3 ]]; then exit 1; fi
+    echo "Image pull failed; retrying (attempt $((attempt + 1)) of 3)" >&2
+    sleep "$((attempt * 5))"
+done
 if compose "$release" up -d --no-build --pull never --force-recreate --wait --wait-timeout 30 && \
    python3 "$release/smoke.py"; then
     ln -sfn -- "$release" "$root/current"
