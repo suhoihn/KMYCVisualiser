@@ -119,8 +119,14 @@ jobs:
           ssh_dir=$(mktemp -d)
           trap 'rm -f -- "$ssh_dir/key" "$ssh_dir/known_hosts"; rmdir -- "$ssh_dir"' EXIT
           umask 077
-          printf '%s\n' "$VPS_SSH_KEY" > "$ssh_dir/key"
-          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$ssh_dir/known_hosts"
+          # GitHub secrets may have been pasted from a Windows editor.
+          printf '%s\n' "$VPS_SSH_KEY" | tr -d '\r' > "$ssh_dir/key"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" | tr -d '\r' > "$ssh_dir/known_hosts"
+          if ! fingerprint=$(ssh-keygen -y -P '' -f "$ssh_dir/key" | ssh-keygen -lf -); then
+            echo '::error::VPS_SSH_KEY must contain the complete, unencrypted deploy private key.'
+            exit 1
+          fi
+          echo "Deploy key fingerprint: $fingerprint"
           opts=(-i "$ssh_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$ssh_dir/known_hosts")
           target="$VPS_USER@$VPS_HOST"
           release="kmy-deploy/releases/$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
