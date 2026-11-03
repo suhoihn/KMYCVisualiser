@@ -14,8 +14,12 @@ previous=$(readlink -f "$root/current" || true)
 compose() {
     local directory=$1
     shift
+    local files=(--file "$directory/compose.yaml")
+    if [[ -f "$directory/compose.public.yaml" ]] && docker network inspect kmy-public-edge >/dev/null 2>&1; then
+        files+=(--file "$directory/compose.public.yaml")
+    fi
     docker compose --project-name kmy-playground --env-file "$directory/images.env" \
-        --file "$directory/compose.yaml" "$@"
+        "${files[@]}" "$@"
 }
 
 compose "$release" config --quiet

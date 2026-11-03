@@ -2,7 +2,7 @@ import type { AnalysisResult, PlaygroundEvent } from './types'
 
 export async function submitPlayground(files: Record<string, string>, entryFile: string, signal: AbortSignal,
   onEvent: (event: PlaygroundEvent) => void) {
-  const response = await fetch('/api/playground', {
+  const response = await fetch('./api/playground', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ files, entryFile, action: 'run' }), signal,
   })
@@ -44,7 +44,7 @@ export async function submitPlayground(files: Record<string, string>, entryFile:
 }
 
 export async function analyseSource(source: string, signal: AbortSignal): Promise<AnalysisResult> {
-  const response = await fetch('/api/analysis', {
+  const response = await fetch('./api/analysis', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ source }),

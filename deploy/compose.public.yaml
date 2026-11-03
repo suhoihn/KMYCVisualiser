@@ -1,0 +1,9 @@
+services:
+  web:
+    networks:
+      kmy-public-edge:
+        aliases: [kmy-web]
+
+networks:
+  kmy-public-edge:
+    external: true

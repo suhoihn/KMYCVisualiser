@@ -69,7 +69,7 @@ jobs:
         run: |
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
           mkdir -p deployment
-          cp compose.yaml deploy/deploy.sh deploy/smoke.py deployment/
+          cp compose.yaml deploy/compose.public.yaml deploy/deploy.sh deploy/smoke.py deployment/
           repo="ghcr.io/${GITHUB_REPOSITORY,,}"
           for component in web backend runner job; do
             image="$repo-$component"
@@ -131,5 +131,5 @@ jobs:
           target="$VPS_USER@$VPS_HOST"
           release="kmy-deploy/releases/$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           ssh "${opts[@]}" "$target" "mkdir -p '$release'"
-          scp "${opts[@]}" deployment/{compose.yaml,deploy.sh,smoke.py,images.env} "$target:$release/"
+          scp "${opts[@]}" deployment/{compose.yaml,compose.public.yaml,deploy.sh,smoke.py,images.env} "$target:$release/"
           ssh "${opts[@]}" "$target" "bash '$release/deploy.sh'"
